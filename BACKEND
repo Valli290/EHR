@@ -1,0 +1,24 @@
+from flask import Flask, request, jsonify
+from db import insert_patient, get_patient
+
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return "EHR System Backend Running"
+
+@app.route('/add', methods=['POST'])
+def add_record():
+    data = request.get_json()
+    result = insert_patient(data)
+    return jsonify({"message": "Patient record added", "data": result}), 200
+
+@app.route('/get/<string:patient_id>', methods=['GET'])
+def get_record(patient_id):
+    record = get_patient(patient_id)
+    if record:
+        return jsonify(record), 200
+    return jsonify({"message": "Patient not found"}), 404
+
+if __name__ == "__main__":
+    app.run(debug=True)
